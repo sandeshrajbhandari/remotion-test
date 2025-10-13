@@ -6,13 +6,18 @@
     "dev": "remotion studio",
     "build": "remotion bundle",
     "upgrade": "remotion upgrade",
-    "lint": "eslint src && tsc"
+    "lint": "eslint src && tsc",
+    "server": "tsx server/index.ts",
+    "server:dev": "tsx watch server/index.ts"
   },
   "repository": {},
   "license": "UNLICENSED",
   "dependencies": {
+    "@remotion/bundler": "^4.0.358",
     "@remotion/cli": "^4.0.0",
+    "@remotion/renderer": "^4.0.358",
     "@remotion/zod-types": "^4.0.0",
+    "express": "^5.1.0",
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "remotion": "^4.0.0",
@@ -20,10 +25,16 @@
   },
   "devDependencies": {
     "@remotion/eslint-config-flat": "^4.0.0",
+    "@remotion/tailwind": "^4.0.358",
+    "autoprefixer": "^10.4.20",
+    "@types/express": "^5.0.3",
+    "@types/node": "^24.7.2",
     "@types/react": "19.0.0",
     "@types/web": "0.0.166",
     "eslint": "9.19.0",
     "prettier": "3.6.0",
+    "tailwindcss": "^3.4.0",
+    "tsx": "^4.20.6",
     "typescript": "5.8.2"
   },
   "private": true

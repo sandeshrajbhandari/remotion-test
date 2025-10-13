@@ -1,0 +1,70 @@
+{
+    "shots": [
+        {
+            "sentence": "I made a coding agent using Python and Olama that runs on my 4-year-old MacBook M1.",
+            "start_time": 0.0,
+            "end_time": 5.28,
+            "compositionId": "ImageScreen",
+            "compositionProps": {
+                "titleText": "Coding Agent on MacBook",
+                "imageSource": "https://imgs.search.brave.com/y4aahJnEro56covSl-3LEdHiGClPuWSYadZA02mpws8/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9wbGF5/LWxoLmdvb2dsZXVz/ZXJjb250ZW50LmNv/bS9mS25scFl3ejla/b1ZKMUYwR0VCN0FV/MjI0T09iRDRxQnZX/NlpjY3BBY2NWN25H/U0tfbFNIRFd1eWtV/T0xlNjVoNzJJPXc1/MjYtaDI5Ni1ydw"
+            },
+            "notes": "Visual representation of the coding agent running on a MacBook to introduce the topic."
+        },
+        {
+            "sentence": "This was a great learning experience to understand how more advanced coding agents like CloudCodeCode, Cursor and GitHub Copilot works under the hood.",
+            "start_time": 6.04,
+            "end_time": 14.24,
+            "compositionId": "TitleScreenStill",
+            "compositionProps": {
+                "titleText": "Learning Experience: CloudCodeCode, Cursor, GitHub Copilot",
+                "titleColor": "#000000"
+            },
+            "notes": "Text overlay listing the advanced coding agents for clarity."
+        },
+        {
+            "sentence": "It also showcases how small and local 8B models like when 8B that can literally run on your hardware for free perform under different coding tasks.",
+            "start_time": 14.9,
+            "end_time": 23.76,
+            "compositionId": "TitleScreenStill",
+            "compositionProps": {
+                "titleText": "Small 8B Models: Win 8B on Your Hardware",
+                "titleColor": "#000000"
+            },
+            "notes": "Highlighting the efficiency of small, local models with a text overlay."
+        },
+        {
+            "sentence": "This coding agent has a very minimal set of tools.",
+            "start_time": 24.6,
+            "end_time": 27.18,
+            "compositionId": "TitleScreenStill",
+            "compositionProps": {
+                "titleText": "Minimal Toolset",
+                "titleColor": "#000000"
+            },
+            "notes": "Simple text emphasizing the minimal toolset."
+        },
+        {
+            "sentence": "The agent has access to the following tools.",
+            "start_time": 28.46,
+            "end_time": 30.56,
+            "compositionId": "TitleScreenStill",
+            "compositionProps": {
+                "titleText": "Agent Tools:",
+                "titleColor": "#000000"
+            },
+            "notes": "Introduces the list of tools."
+        },
+        {
+            "sentence": "The most used tools are RedFile, ListFiles, EditFile and Run command tools.",
+            "start_time": 31.22,
+            "end_time": 36.7,
+            "compositionId": "TitleScreenStill",
+            "compositionProps": {
+                "titleText": "RedFile, ListFiles, EditFile, Run Command",
+                "titleColor": "#000000"
+            },
+            "notes": "Lists the specific tools as a text overlay."
+        }
+    ]
+}

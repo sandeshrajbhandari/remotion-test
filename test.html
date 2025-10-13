@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Shot List Renderer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        .shot-item {
+            border: 1px solid #ccc;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+        }
+
+        .shot-item h3 {
+            margin-top: 0;
+        }
+
+        .shot-item p {
+            margin-bottom: 5px;
+        }
+
+        .shot-item button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        .shot-item button:hover {
+            background-color: #45a049;
+        }
+
+        .transcript {
+            font-style: italic;
+            color: #555;
+            margin-top: 10px;
+            border-top: 1px dashed #eee;
+            padding-top: 10px;
+        }
+
+        .still-container {
+            margin-top: 10px;
+            border: 1px dashed #eee;
+            padding: 10px;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f9f9f9;
+        }
+
+        .still-container img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Shot List Renderer</h1>
+
+    <div id="shotList"></div>
+
+    <script>
+        const sentences_with_timestamps = [
+            { 'sentence': ' I made a coding agent using Python and Olama that runs on my 4-year-old MacBook M1.', 'start_time': 0.0, 'end_time': 5.28, 'duration': 5.28 },
+            { 'sentence': ' This was a great learning experience to understand how more advanced coding agents like CloudCodeCode, Cursor and GitHub Copilot works under the hood.', 'start_time': 6.04, 'end_time': 14.24, 'duration': 8.2 },
+            { 'sentence': ' It also showcases how small and local 8B models like when 8B that can literally run on your hardware for free perform under different coding tasks.', 'start_time': 14.92, 'end_time': 23.72, 'duration': 8.8 },
+            { 'sentence': ' This coding agent has a very minimal set of tools.', 'start_time': 24.56, 'end_time': 27.16, 'duration': 2.6 },
+            { 'sentence': ' The agent has access to the following tools.', 'start_time': 28.14, 'end_time': 30.52, 'duration': 2.38 },
+            { 'sentence': ' The most used tools are RedFile, ListFiles, EditFile and Run command tools.', 'start_time': 31.28, 'end_time': 36.68, 'duration': 5.4 }
+        ];
+
+        const shotData = [
+            { start_time: 0.0, end_time: 5.28, compositionId: "TitleScreenStill", titleText: "Coding Agent on MacBook M1", titleColor: "#000000" },
+            { start_time: 6.04, end_time: 14.24, compositionId: "AvatarScreen", titleText: "Learning from Advanced Agents", imageSource: "screenshot1.png", alignment: "left" },
+            { start_time: 14.92, end_time: 23.72, compositionId: "ImageScreen", titleText: "Local 8B Models Performance", imageSource: "screenshot1.png" },
+            { start_time: 24.56, end_time: 27.16, compositionId: "AvatarScreen", titleText: "Minimal Toolset", imageSource: "avatar.webp", alignment: "center" },
+            { start_time: 28.14, end_time: 30.52, compositionId: "ImageScreen", titleText: "Agent Tools Access", imageSource: "avatar.webp" },
+            { start_time: 31.28, end_time: 36.68, compositionId: "AvatarScreen", titleText: "Most Used Tools", imageSource: "avatar.webp", alignment: "right" }
+        ];
+
+        const shotListContainer = document.getElementById('shotList');
+
+        shotData.forEach((shot, index) => {
+            const transcriptSentence = sentences_with_timestamps.find(s => s.start_time === shot.start_time && s.end_time === shot.end_time);
+
+            const shotItem = document.createElement('div');
+            shotItem.classList.add('shot-item');
+            shotItem.innerHTML = `
+                <h3>Shot ${index + 1} (${shot.start_time}s - ${shot.end_time}s)</h3>
+                <p>Composition: <strong>${shot.compositionId}</strong></p>
+                <p>Title: ${shot.titleText || 'N/A'}</p>
+                ${shot.imageSource ? `<p>Image Source: <a href="${shot.imageSource}" target="_blank">${shot.imageSource}</a></p>` : ''}
+                ${shot.alignment ? `<p>Alignment: ${shot.alignment}</p>` : ''}
+                ${shot.titleColor ? `<p>Title Color: ${shot.titleColor}</p>` : ''}
+                ${transcriptSentence ? `<p class="transcript">Transcript: "${transcriptSentence.sentence}"</p>` : '<p class="transcript">Transcript: N/A</p>'}
+                <button onclick="renderStill(${index})">Render Still</button>
+                <div class="still-container" id="still-${index}">
+                    <p>Image will appear here</p>
+                </div>
+            `;
+            shotListContainer.appendChild(shotItem);
+        });
+
+        async function renderStill(index) {
+            const shot = shotData[index];
+            const stillContainer = document.getElementById(`still-${index}`);
+            stillContainer.innerHTML = '<p>Rendering...</p>';
+
+            const inputProps = {};
+            if (shot.titleText) inputProps.titleText = shot.titleText;
+            if (shot.titleColor) inputProps.titleColor = shot.titleColor;
+            if (shot.imageSource) inputProps.imageSource = shot.imageSource;
+            if (shot.alignment) inputProps.alignment = shot.alignment;
+
+            const requestBody = {
+                compositionId: shot.compositionId,
+                inputProps: inputProps,
+                compositionCache: true
+            };
+
+            try {
+                const response = await fetch('http://localhost:3000/render/still', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+                }
+
+                const data = await response.json();
+                if (data.url) {
+                    stillContainer.innerHTML = `<img src="${data.url}" alt="Rendered Still">`;
+                } else {
+                    stillContainer.innerHTML = '<p style="color: red;">Error: No image URL returned.</p>';
+                }
+            } catch (error) {
+                console.error('Error rendering still:', error);
+                stillContainer.innerHTML = `<p style="color: red;">Failed to render: ${error.message}</p>`;
+            }
+        }
+    </script>
+</body>
+
+</html>

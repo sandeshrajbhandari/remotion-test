@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Remotion Composition Gallery</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .loading {
+            text-align: center;
+            color: white;
+            font-size: 1.2rem;
+            margin: 40px 0;
+        }
+
+        .error {
+            background: #ff4757;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .compositions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .composition-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .composition-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .composition-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .composition-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .composition-type {
+            background: #3498db;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .composition-type.still {
+            background: #e74c3c;
+        }
+
+        .composition-info {
+            margin-bottom: 20px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            color: #7f8c8d;
+        }
+
+        .info-label {
+            font-weight: 500;
+        }
+
+        .preview-section {
+            margin-bottom: 20px;
+        }
+
+        .preview-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .preview-container {
+            position: relative;
+            background: #f8f9fa;
+            border-radius: 10px;
+            overflow: hidden;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .preview-placeholder {
+            color: #95a5a6;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        .preview-video {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+        }
+
+        .preview-video.seeking {
+            opacity: 0.7;
+        }
+
+        .preview-image {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2980b9;
+        }
+
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #229954;
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+
+        .btn-secondary {
+            background: #95a5a6;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .status-cached {
+            background: #27ae60;
+        }
+
+        .status-new {
+            background: #f39c12;
+        }
+
+        .status-none {
+            background: #95a5a6;
+        }
+
+        .refresh-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .refresh-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .server-status {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .server-status.online {
+            border-left: 4px solid #27ae60;
+        }
+
+        .server-status.offline {
+            border-left: 4px solid #e74c3c;
+        }
+
+        @media (max-width: 768px) {
+            .compositions-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="server-status" id="serverStatus">
+            <span class="status-indicator"></span>
+            Checking server...
+        </div>
+
+        <button class="refresh-btn" onclick="loadCompositions()">
+            🔄 Refresh
+        </button>
+
+        <div class="header">
+            <h1>🎬 Remotion Composition Gallery</h1>
+            <p>Browse and preview your Remotion compositions</p>
+        </div>
+
+        <div id="loading" class="loading">
+            Loading compositions...
+        </div>
+
+        <div id="error" class="error" style="display: none;"></div>
+
+        <div id="compositionsContainer" class="compositions-grid"></div>
+    </div>
+
+    <script>
+        const SERVER_URL = 'http://localhost:3000';
+        let compositions = [];
+        let renders = [];
+
+        // Check server status
+        async function checkServerStatus() {
+            try {
+                const response = await fetch(`${SERVER_URL}/health`);
+                const statusEl = document.getElementById('serverStatus');
+                if (response.ok) {
+                    statusEl.className = 'server-status online';
+                    statusEl.innerHTML = '<span class="status-indicator status-cached"></span>Server Online';
+                } else {
+                    throw new Error('Server not responding');
+                }
+            } catch (error) {
+                const statusEl = document.getElementById('serverStatus');
+                statusEl.className = 'server-status offline';
+                statusEl.innerHTML = '<span class="status-indicator status-none"></span>Server Offline';
+            }
+        }
+
+        // Load compositions from server
+        async function loadCompositions() {
+            const loadingEl = document.getElementById('loading');
+            const errorEl = document.getElementById('error');
+            const containerEl = document.getElementById('compositionsContainer');
+
+            loadingEl.style.display = 'block';
+            errorEl.style.display = 'none';
+            containerEl.innerHTML = '';
+
+            try {
+                // Check server status first
+                await checkServerStatus();
+
+                // Load compositions and renders in parallel
+                const [compositionsResponse, rendersResponse] = await Promise.all([
+                    fetch(`${SERVER_URL}/compositions`),
+                    fetch(`${SERVER_URL}/renders`)
+                ]);
+
+                if (!compositionsResponse.ok) {
+                    throw new Error(`Failed to load compositions: ${compositionsResponse.statusText}`);
+                }
+
+                const compositionsData = await compositionsResponse.json();
+                compositions = compositionsData.compositions || [];
+
+                if (rendersResponse.ok) {
+                    const rendersData = await rendersResponse.json();
+                    renders = rendersData.files || [];
+                }
+
+                loadingEl.style.display = 'none';
+                renderCompositions();
+
+            } catch (error) {
+                console.error('Error loading compositions:', error);
+                loadingEl.style.display = 'none';
+                errorEl.style.display = 'block';
+                errorEl.textContent = `Error: ${error.message}`;
+            }
+        }
+
+        // Render compositions in the grid
+        function renderCompositions() {
+            const containerEl = document.getElementById('compositionsContainer');
+
+            if (compositions.length === 0) {
+                containerEl.innerHTML = '<div class="error">No compositions found</div>';
+                return;
+            }
+
+            containerEl.innerHTML = compositions.map(composition => {
+                const cachedFiles = renders.filter(file =>
+                    file.filename.startsWith(composition.id)
+                ).sort((a, b) => new Date(b.modified) - new Date(a.modified));
+
+                const latestFile = cachedFiles[0];
+                const hasCached = cachedFiles.length > 0;
+
+                return `
+                    <div class="composition-card">
+                        <div class="composition-header">
+                            <div class="composition-title">${composition.id}</div>
+                            <div class="composition-type ${composition.id.includes('Still') ? 'still' : ''}">
+                                ${composition.id.includes('Still') ? 'Still' : 'Video'}
+                            </div>
+                        </div>
+
+                        <div class="composition-info">
+                            <div class="info-row">
+                                <span class="info-label">Duration:</span>
+                                <span>${composition.durationInFrames} frames</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">FPS:</span>
+                                <span>${composition.fps}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Resolution:</span>
+                                <span>${composition.width}×${composition.height}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Status:</span>
+                                <span>
+                                    <span class="status-indicator ${hasCached ? 'status-cached' : 'status-none'}"></span>
+                                    ${hasCached ? `${cachedFiles.length} cached file(s)` : 'No cached files'}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="preview-section">
+                            <div class="preview-title">Preview</div>
+                            <div class="preview-container">
+                                ${renderPreview(composition, latestFile)}
+                            </div>
+                        </div>
+
+                        <div class="actions">
+                            ${renderActions(composition, hasCached, latestFile)}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Render preview content
+        function renderPreview(composition, latestFile) {
+            if (!latestFile) {
+                return '<div class="preview-placeholder">No preview available<br>Click "Render Preview" to generate</div>';
+            }
+
+            const fileUrl = `${SERVER_URL}/renders/${latestFile.filename}`;
+
+            if (latestFile.type === 'video') {
+                return `<video class="preview-video" controls onloadedmetadata="seekToEnd(this, ${composition.durationInFrames}, ${composition.fps})"><source src="${fileUrl}" type="video/mp4"></video>`;
+            } else if (latestFile.type === 'still') {
+                return `<img class="preview-image" src="${fileUrl}" alt="Preview">`;
+            }
+
+            return '<div class="preview-placeholder">Unknown file type</div>';
+        }
+
+        // Seek video to the last frame
+        function seekToEnd(videoElement, durationInFrames, fps) {
+            if (!videoElement || !durationInFrames || !fps) return;
+
+            videoElement.classList.add('seeking');
+
+            const seekToLastFrame = () => {
+                if (videoElement.duration && videoElement.duration > 0) {
+                    // Calculate the time for the last frame
+                    const lastFrameTime = (durationInFrames - 1) / fps;
+                    // Ensure we don't seek beyond the video duration
+                    const seekTime = Math.min(lastFrameTime, videoElement.duration - 0.1);
+
+                    videoElement.currentTime = seekTime;
+                    videoElement.classList.remove('seeking');
+                } else {
+                    // If metadata isn't loaded yet, try again in a short while
+                    setTimeout(seekToLastFrame, 100);
+                }
+            };
+
+            // Try to seek immediately, or wait for metadata
+            if (videoElement.readyState >= 1) {
+                seekToLastFrame();
+            } else {
+                videoElement.addEventListener('loadedmetadata', seekToLastFrame, { once: true });
+            }
+        }
+
+        // Render action buttons
+        function renderActions(composition, hasCached, latestFile) {
+            const isStill = composition.id.includes('Still');
+            const renderEndpoint = isStill ? '/render/still' : '/render/video';
+
+            let actions = `
+                <button class="btn btn-primary" onclick="renderComposition('${composition.id}', '${renderEndpoint}', false)">
+                    ${isStill ? 'Render Still' : 'Render Video'}
+                </button>
+            `;
+
+            if (hasCached) {
+                actions += `
+                    <button class="btn btn-success" onclick="renderComposition('${composition.id}', '${renderEndpoint}', true)">
+                        Use Cached
+                    </button>
+                `;
+            }
+
+            if (latestFile) {
+                actions += `
+                    <button class="btn btn-secondary" onclick="downloadFile('${latestFile.filename}')">
+                        Download
+                    </button>
+                    <button class="btn btn-danger" onclick="deleteFile('${latestFile.filename}')">
+                        Delete
+                    </button>
+                `;
+            }
+
+            return actions;
+        }
+
+        // Render a composition
+        async function renderComposition(compositionId, endpoint, useCache) {
+            const button = event.target;
+            const originalText = button.textContent;
+
+            button.disabled = true;
+            button.textContent = 'Rendering...';
+
+            try {
+                const response = await fetch(`${SERVER_URL}${endpoint}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        compositionId,
+                        compositionCache: useCache
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Reload compositions to show updated previews
+                    await loadCompositions();
+
+                    // Show success message
+                    showNotification(`✅ ${result.message}`, 'success');
+                } else {
+                    throw new Error(result.error || 'Render failed');
+                }
+
+            } catch (error) {
+                console.error('Render error:', error);
+                showNotification(`❌ Render failed: ${error.message}`, 'error');
+            } finally {
+                button.disabled = false;
+                button.textContent = originalText;
+            }
+        }
+
+        // Download a file
+        function downloadFile(filename) {
+            const link = document.createElement('a');
+            link.href = `${SERVER_URL}/renders/${filename}`;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Delete a file
+        async function deleteFile(filename) {
+            if (!confirm(`Are you sure you want to delete ${filename}?`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${SERVER_URL}/renders/${filename}`, {
+                    method: 'DELETE'
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showNotification(`✅ ${result.message}`, 'success');
+                    await loadCompositions();
+                } else {
+                    throw new Error(result.error || 'Delete failed');
+                }
+
+            } catch (error) {
+                console.error('Delete error:', error);
+                showNotification(`❌ Delete failed: ${error.message}`, 'error');
+            }
+        }
+
+        // Show notification
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'success' ? '#27ae60' : '#e74c3c'};
+                color: white;
+                padding: 15px 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                z-index: 1000;
+                font-weight: 500;
+                max-width: 300px;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', () => {
+            loadCompositions();
+
+            // Auto-refresh every 30 seconds
+            setInterval(loadCompositions, 30000);
+        });
+    </script>
+</body>
+
+</html>

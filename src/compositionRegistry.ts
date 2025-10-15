@@ -9,7 +9,17 @@ import {
     ImageScreen,
     imageScreenSchema,
     AvatarScreen,
+    TypewriterText,
+    TitleScreenDotBg,
+    TextScreen,
+    CodeSnippet,
 } from "./3.still-test";
+
+// Schema for TypewriterText component
+export const typewriterTextSchema = z.object({
+    text: z.string().describe("Text to display with typewriter effect"),
+    speed: z.number().optional().describe("Frames per character (default: 3)"),
+});
 
 export type RegistryEntry = {
     id: string;
@@ -59,7 +69,7 @@ export const compositionRegistry: RegistryEntry[] = [
         defaultProps: {
             titleText: "Avatar Screen Left Alignment",
             imageSource:
-                "https://imgs.search.brave.com/APvU3Zz0q9tkRJcKzDXpFmiscdWYvZYWWLAgmMFdOR8/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93d3cu/cG5nYWxsLmNvbS93/cC1jb250ZW50L3Vw/bG9hZHMvMTIvQXZh/dGFyLVByb2ZpbGUt/VmVjdG9yLVBORy1G/aWxlLnBuZw",
+                "avatars/avatar-hand-fold.png",
             alignment: "left",
         },
     },
@@ -91,6 +101,20 @@ export const compositionRegistry: RegistryEntry[] = [
         defaultProps: {
             logoColor1: "#91dAE2",
             logoColor2: "#86A8E7",
+        },
+    },
+    {
+        id: "TypewriterText",
+        kind: "composition",
+        component: TypewriterText,
+        width: 1920,
+        height: 1080,
+        fps: 30,
+        durationInFrames: 120, // 4 seconds at 30fps
+        schema: typewriterTextSchema,
+        defaultProps: {
+            text: "Typewriter Effect",
+            speed: 3,
         },
     },
     {
@@ -133,6 +157,56 @@ export const compositionRegistry: RegistryEntry[] = [
             ],
         },
     },
+    {
+        id: "TitleScreenDotBg",
+        kind: "composition",
+        component: TitleScreenDotBg,
+        width: 1920,
+        height: 1080,
+        fps: 30,
+        durationInFrames: 120,
+        schema: myCompSchema3,
+        defaultProps: {
+            titleText: "Title with Animated Dots",
+            titleColor: "#000000"
+        }
+    },
+    {
+        id: "TextScreen",
+        kind: "still",
+        component: TextScreen,
+        width: 1920,
+        height: 1080,
+        // schema: myCompSchema3,
+        defaultProps: {
+            titleText: "Text Screen",
+            longMultiLineText: `This is a start of a pragraph or a bullet list. 
+            
+            - Item 1
+
+            - Item 2
+
+            - Item 3`,
+        },
+    },
+    {
+        id: "CodeSnippet",
+        kind: "still",
+        component: CodeSnippet,
+        width: 1920,
+        height: 1080,
+        // schema: myCompSchema3,
+        defaultProps: {
+            titleText: "Code Snippet",
+            code: `print("Hello, World!")
+def greet(name):
+    return f"Hello, {name}!"
+
+# This is a Python example
+result = greet("Developer")
+print(result)`
+        },
+    }
 ];
 
 export const compositionIdToEntry = Object.fromEntries(
